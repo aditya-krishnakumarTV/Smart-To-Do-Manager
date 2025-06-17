@@ -1,0 +1,119 @@
+<div class="task-form-container" [class.editing]="editingTask">
+    <form (ngSubmit)="onSubmit()" #taskForm="ngForm" class="task-form">
+        <div class="form-row">
+            <input
+                type="text"
+                [(ngModel)]="title"
+                name="title"
+                placeholder="Add a new task..."
+                class="task-input"
+                required
+                #titleInput
+                maxlength="100"
+                [attr.aria-label]="editingTask ? 'Edit task title' : 'New task title'"
+            />
+
+            <button 
+                type="submit" 
+                [disabled]="!taskForm.form.valid || isSubmitting()" 
+                class="add-btn"
+                [attr.aria-label]="editingTask ? 'Update task' : 'Add new task'"
+            >
+              {{ editingTask ? 'Update' : 'Add' }}
+              @if (isSubmitting()) {
+                <span class="loading-spinner" aria-hidden="true">⟳</span>
+              }
+            </button>
+        </div>
+
+        @if (showDetails()) {
+            <div class="form-row">
+                <textarea
+                    [(ngModel)]="description"
+                    name="description"
+                    placeholder="Description (optional)"
+                    class="description-input"
+                    rows="2"
+                    maxlength="500"
+                    aria-label="Task description"
+                ></textarea>
+            </div>
+
+            <div class="form-controls">
+                <div class="control-group">
+                    <label for="priority-select">Priority:</label>
+                    <select 
+                        [(ngModel)]="priority" 
+                        name="priority" 
+                        id="priority-select"
+                        class="priority-select"
+                        aria-label="Task priority"
+                    >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="tag-input">Tags:</label>
+                    <div class="tags-input-container">
+                        <input
+                            type="text"
+                            [(ngModel)]="newTag"
+                            name="newTag"
+                            id="tag-input"
+                            placeholder="Add tag..."
+                            class="tag-input"
+                            (keydown.enter)="addTag($event)"
+                            (keydown.comma)="addTag($event)"
+                            maxlength="20"
+                            aria-label="Add new tag"
+                        />
+
+                        <div class="tags-list" role="list" aria-label="Current tags">
+                            @for (tag of tags(); track trackByTag($index,tag)) {
+                                <span 
+                                  class="tag"
+                                  role="listitem"
+                                >
+                                    {{ tag }}
+                                    <button 
+                                      type="button" 
+                                      (click)="removeTag(tag)" 
+                                      class="remove-tag"
+                                      [attr.aria-label]="'Remove tag: ' + tag"
+                                    >×</button>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+        <div class="form-actions">
+            <button 
+                type="button" 
+                (click)="toggleDetails()" 
+                class="toggle-details"
+                [attr.aria-expanded]="showDetails()"
+                aria-controls="task-details"
+            >
+              {{ showDetails() ? 'Hide Details' : 'Show Details' }}
+            </button>
+
+            @if (editingTask) {
+                <button 
+                    type="button" 
+                    (click)="cancelEdit()" 
+                    class="cancel-btn"
+                    aria-label="Cancel editing"
+                >
+                  Cancel
+                </button>
+            }
+        </div>
+    </form>
+</div>

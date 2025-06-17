@@ -22,7 +22,7 @@ export class ThemeService {
             this.isDarkMode.next(isDark);
 
             this.applyTheme(isDark);
-        });
+        }, { allowSignalWrites: true });
     }
 
     private initializeTheme(): void {
