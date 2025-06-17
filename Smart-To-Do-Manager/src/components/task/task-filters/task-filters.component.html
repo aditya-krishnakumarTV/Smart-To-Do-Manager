@@ -1,0 +1,89 @@
+<div class="filters-container">
+    <div class="search-bar">
+        <input
+            type="text"
+            [value]="searchTerm()"
+            (input)="onSearchInput($event)"
+            placeholder="Search tasks..."
+            class="search-input"
+            aria-label="Search tasks" />
+
+        <span class="search-icon" aria-hidden="true">🔍</span>
+    </div>
+
+    <div class="filter-controls">
+        <div class="filter-group">
+            <label for="priority-filter">Priority:</label>
+
+            <select 
+                [value]="selectedPriority()" 
+                (change)="onPriorityChange($event)" 
+                class="filter-select"
+                id="priority-filter"
+                aria-label="Filter by priority"
+            >
+                <option value="">All Priorities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="status-filter">Status:</label>
+
+            <select 
+                [value]="completedFilter()" 
+                (change)="onStatusChange($event)" 
+                class="filter-select"
+                id="status-filter"
+                aria-label="Filter by status"
+            >
+                <option value="">All Tasks</option>
+                <option value="false">Active</option>
+                <option value="true">Completed</option>
+            </select>
+        </div>
+
+        @if (availableTags.length > 0) {
+             <div class="filter-group">
+                <label>Tags:</label>
+
+                <div class="tags-filter" role="group" aria-label="Filter by tags">
+                    @for (tag of availableTags(); track trackByTag($index, tag)) {
+                        <span
+                            [class]="'tag-filter ' + (selectedTags().includes(tag) ? 'active' : '')"
+                            (click)="toggleTag(tag)"
+                            (keydown.enter)="toggleTag(tag)"
+                            (keydown.space)="toggleTag(tag)"
+                            tabindex="0"
+                            role="button"
+                            [attr.aria-pressed]="selectedTags().includes(tag)"
+                            [attr.aria-label]="'Toggle filter for tag: ' + tag"
+                        >
+                            {{ tag }}
+                        </span>
+                    }
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    <div class="filter-actions">
+        @if (hasActiveFilters()) {
+            <button 
+            (click)="clearFilters()" 
+            class="clear-filters-btn" 
+            aria-label="Clear all filters"
+            >
+                Clear Filters
+            </button>
+
+            <div class="filter-summary">
+                <span class="active-filters-count">{{ activeFiltersCount() }} filter{{ activeFiltersCount() === 1 ? '' : 's' }} active</span>
+            </div>
+        }
+    </div>
+</div>
