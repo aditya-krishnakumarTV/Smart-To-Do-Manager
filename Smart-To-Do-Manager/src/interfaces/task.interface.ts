@@ -21,3 +21,26 @@ export interface TaskFilter {
     tags?: string[];
     completed?: boolean;
 }
+
+// Angular 18 enhanced interfaces
+export interface TaskStatistics {
+    total: number;
+    active: number;
+    completed: number;
+    highPriority: number;
+    mediumPriority: number;
+    lowPriority: number;
+    totalTags: number;
+}
+
+export interface TaskExportData {
+    tasks: Task[];
+    exportDate: Date;
+    version: string;
+}
+
+export interface BulkTaskOperation {
+    taskIds: string[];
+    operation: 'complete' | 'delete' | 'update';
+    updates?: Partial<Task>;
+}

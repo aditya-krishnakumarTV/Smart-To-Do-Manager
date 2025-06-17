@@ -13,17 +13,17 @@
             <div class="header-actions">
                 <div class="stats-display">
                     <div class="stat-item">
-                      <span class="stat-number">{{ activeTasks }}</span>
+                      <span class="stat-number">{{ activeTasks() }}</span>
                       <span class="stat-label">Active</span>
                     </div>
                     <div class="stat-item">
-                      <span class="stat-number">{{ completedTasks }}</span>
+                      <span class="stat-number">{{ completedTasks() }}</span>
                       <span class="stat-label">Done</span>
                     </div>
                 </div>
             
-                <button (click)="toggleTheme()" class="theme-toggle" [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
-                  {{ isDarkMode ? '☀️' : '🌙' }}
+                <button (click)="toggleTheme()" class="theme-toggle" [title]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+                  {{ isDarkMode() ? '☀️' : '🌙' }}
                 </button>
             </div>
         </div>
@@ -31,17 +31,32 @@
 
     <main class="main-content">
         <div class="content-wrapper">
+            <!-- <app-task-form
+              [editingTask]="editingTask()"
+              (taskSubmitted)="onTaskSubmitted($event)"
+              (editCancelled)="cancelEdit()" /> -->
+
+            <app-task-filters
+              [availableTags]="availableTags()"
+              (filtersChanged)="onFiltersChange($event)" />
 
             <div class="tasks-section">
                 <div class="section-header">
                     <h2>Your Tasks</h2>
-                    <span class="task-count">{{ filteredTasks.length }} {{ filteredTasks.length === 1 ? 'task' : 'tasks' }}</span>
+                    <span class="task-count">{{ filteredTasks().length }} {{ filteredTasks().length === 1 ? 'task' : 'tasks' }}</span>
                 </div>
+
+                <!-- <app-task-list
+                  [tasks]="filteredTasks()"
+                  [emptyMessage]="getEmptyMessage()"
+                  (taskToggled)="onTaskToggled($event)"
+                  (taskDeleted)="onTaskDeleted($event)"
+                  (taskEdited)="onTaskEdited($event)" /> -->
             </div>
         </div>
     </main>
 
     <footer class="app-footer">
-      <p>&copy; 2025 Smart To-Do Manager. Built with Angular & ❤️</p>
+        <p>&copy; 2025 Smart To-Do Manager. Built with Angular 18 & ❤️</p>
     </footer>
 </div>

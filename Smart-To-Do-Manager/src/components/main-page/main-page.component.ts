@@ -1,5 +1,9 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, computed, DestroyRef, inject, OnInit, signal } from "@angular/core";
+
+import { TaskFormComponent } from "../task/task-form/task-form.component";
+import { TaskFiltersComponent } from "../task/task-filters/task-filters.component";
+import { TaskListComponent } from "../task/task-list/task-list.component";
 
 import { Task, TaskFilter } from "../../interfaces/task.interface";
 
@@ -11,45 +15,54 @@ import { ThemeService } from "../../services/theme.service";
     templateUrl: './main-page.component.html',
     styleUrl: './main-page.component.css',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TaskFormComponent, TaskFiltersComponent, TaskListComponent],
 })
 export class MainPageComponent implements OnInit {
-    tasks: Task[] = [];
-    filteredTasks: Task[] = [];
-    editingTask: Task | null = null;
-    isDarkMode = false;
-    availableTags: string[] = [];
-    currentFilter: TaskFilter = {};
+    tasks = signal<Task[]>([]);
+    editingTask = signal<Task | null>(null);
+    isDarkMode = signal<boolean>(false);
+    availableTags = signal<string[]>([]);
+    currentFilter = signal<TaskFilter>({});
 
-    constructor(
-        private taskService: TaskService,
-        private themeService: ThemeService
-    ) { }
+    filteredTasks = computed(() => {
+        return this.taskService.filterTasks(this.currentFilter());
+    });
+
+    activeTasks = computed(() => {
+        return this.tasks().filter(task => !task.completed).length;
+    });
+
+    completedTasks = computed(() => {
+        return this.tasks().filter(task => task.completed).length;
+    });
+
+    private taskService = inject(TaskService)
+    private themeService = inject(ThemeService)
+
+    private destroyRef = inject(DestroyRef)
 
     ngOnInit(): void {
-        this.taskService.tasks$.subscribe(tasks => {
-            this.tasks = tasks;
-            this.availableTags = this.taskService.getAllTags();
-            this.applyFilters();
+        const subscription1 = this.taskService.tasks$.subscribe(tasks => {
+            this.tasks.set(tasks);
+            this.availableTags.set(this.taskService.getAllTags());
         });
 
-        this.themeService.isDarkMode$.subscribe(isDark => {
-            this.isDarkMode = isDark;
+        const subscription2 = this.themeService.isDarkMode$.subscribe(isDark => {
+            this.isDarkMode.set(isDark);
         });
-    }
 
-    get activeTasks(): number {
-        return this.tasks.filter(task => !task.completed).length;
-    }
-
-    get completedTasks(): number {
-        return this.tasks.filter(task => task.completed).length;
+        this.destroyRef.onDestroy(() => {
+            subscription1.unsubscribe();
+            subscription2.unsubscribe();
+        })
     }
 
     onTaskSubmitted(taskData: any): void {
-        if (this.editingTask) {
-            this.taskService.updateTask(this.editingTask.id, taskData);
-            this.editingTask = null;
+        const currentEditingTask = this.editingTask();
+
+        if (currentEditingTask) {
+            this.taskService.updateTask(currentEditingTask.id, taskData);
+            this.editingTask.set(null);
         } else {
             this.taskService.addTask(
                 taskData.title,
@@ -66,32 +79,33 @@ export class MainPageComponent implements OnInit {
 
     onTaskDeleted(taskId: string): void {
         this.taskService.deleteTask(taskId);
-        if (this.editingTask && this.editingTask.id === taskId) {
-            this.editingTask = null;
+
+        const currentEditingTask = this.editingTask();
+
+        if (currentEditingTask && currentEditingTask.id === taskId) {
+            this.editingTask.set(null);
         }
     }
 
     onTaskEdited(task: Task): void {
-        this.editingTask = task;
+        this.editingTask.set(task);
     }
 
     cancelEdit(): void {
-        this.editingTask = null;
+        this.editingTask.set(null);
     }
 
     onFiltersChange(filter: TaskFilter): void {
-        this.currentFilter = filter;
-        this.applyFilters();
-    }
-
-    private applyFilters(): void {
-        this.filteredTasks = this.taskService.filterTasks(this.currentFilter);
+        this.currentFilter.set(filter);
     }
 
     getEmptyMessage(): string {
-        if (Object.keys(this.currentFilter).length > 0) {
+        const filter = this.currentFilter();
+
+        if (Object.keys(filter).length > 0) {
             return 'No tasks match your current filters.';
         }
+
         return 'Start by creating your first task above!';
     }
 
