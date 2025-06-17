@@ -1,0 +1,86 @@
+<div class="task-list">
+  @if (tasks.length === 0) {
+    <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">📝</div>
+        <h3>No tasks found</h3>
+        <p>{{ emptyMessage }}</p>
+    </div>
+  }
+  
+  @for (task of tasks; track trackByTaskId($index, task)) {
+    <div 
+        class="task-card" 
+        [class]="getTaskClasses(task)"
+        [attr.aria-label]="'Task: ' + task.title"
+    >
+      <div class="task-main">
+          <div class="task-checkbox">
+            <input
+              type="checkbox"
+              [checked]="task.completed"
+              (change)="onToggleTask(task.id)"
+              [id]="'task-' + task.id"
+              [attr.aria-label]="'Mark task as ' + (task.completed ? 'incomplete' : 'complete')"
+            />
+            <label [for]="'task-' + task.id" class="checkbox-label"></label>
+          </div>  
+
+          <div class="task-content" [class.completed]="task.completed">
+            <h3 class="task-title">{{ task.title }}</h3>
+            @if (task.description) {
+              <p class="task-description">{{ task.description }}</p>
+            }
+            
+            <div class="task-meta">
+              <span 
+                class="priority-badge" 
+                [class]="'priority-' + task.priority"
+                [attr.aria-label]="'Priority: ' + getPriorityLabel(task.priority)"
+              >
+                {{ getPriorityLabel(task.priority) }}
+              </span> 
+
+              @if (task.tags.length > 0) {
+                <div class="task-tags" role="list" aria-label="Task tags">
+                  @for (tag of task.tags; track trackByTag($index,tag)) {
+                    <span 
+                      class="task-tag"
+                      role="listitem"
+                    >{{ tag }}</span>
+                  }
+                </div>  
+              }
+
+              <span 
+                class="task-date"
+                [attr.aria-label]="'Last updated: ' + formatDateForScreenReader(task.updatedAt)"
+              >
+                {{ formatDate(task.updatedAt) }}
+              </span>
+
+            </div>
+          </div>
+
+          <div class="task-actions" role="group" aria-label="Task actions">
+            <button 
+              (click)="onEditTask(task)" 
+              class="action-btn edit-btn" 
+              [attr.aria-label]="'Edit task: ' + task.title"
+              title="Edit task"
+            >
+              ✏️
+            </button>
+            <button 
+              (click)="onDeleteTask(task.id)" 
+              class="action-btn delete-btn" 
+              [attr.aria-label]="'Delete task: ' + task.title"
+              title="Delete task"
+            >
+              🗑️
+            </button>
+          </div>
+          
+      </div>
+    </div>
+  }
+</div>

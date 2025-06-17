@@ -32,13 +32,13 @@
     <main class="main-content">
         <div class="content-wrapper">
             <app-task-form
-              [editingTask]="editingTask()"
-              (taskSubmitted)="onTaskSubmitted($event)"
-              (editCancelled)="cancelEdit()" />
+                [editingTask]="editingTask()"
+                (taskSubmitted)="onTaskSubmitted($event)"
+                (editCancelled)="cancelEdit()" />
 
             <app-task-filters
-              [availableTags]="availableTags()"
-              (filtersChanged)="onFiltersChange($event)" />
+                [availableTags]="availableTags()"
+                (filtersChanged)="onFiltersChange($event)" />
 
             <div class="tasks-section">
                 <div class="section-header">
@@ -46,12 +46,12 @@
                     <span class="task-count">{{ filteredTasks().length }} {{ filteredTasks().length === 1 ? 'task' : 'tasks' }}</span>
                 </div>
 
-                <!-- <app-task-list
-                  [tasks]="filteredTasks()"
-                  [emptyMessage]="getEmptyMessage()"
-                  (taskToggled)="onTaskToggled($event)"
-                  (taskDeleted)="onTaskDeleted($event)"
-                  (taskEdited)="onTaskEdited($event)" /> -->
+                <app-task-list
+                    [tasks]="filteredTasks()"
+                    [emptyMessage]="getEmptyMessage()"
+                    (taskToggled)="onTaskToggled($event)"
+                    (taskDeleted)="onTaskDeleted($event)"
+                    (taskEdited)="onTaskEdited($event)" />
             </div>
         </div>
     </main>
