@@ -1,1 +1,47 @@
-<p>Main page</p>
+<div class="app-container">
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="app-title">
+                  <span class="title-icon">✓</span>
+                  Smart To-Do Manager
+                </h1>
+
+                <p class="app-subtitle">Organize, prioritize, and achieve your goals</p>
+            </div>
+          
+            <div class="header-actions">
+                <div class="stats-display">
+                    <div class="stat-item">
+                      <span class="stat-number">{{ activeTasks }}</span>
+                      <span class="stat-label">Active</span>
+                    </div>
+                    <div class="stat-item">
+                      <span class="stat-number">{{ completedTasks }}</span>
+                      <span class="stat-label">Done</span>
+                    </div>
+                </div>
+            
+                <button (click)="toggleTheme()" class="theme-toggle" [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+                  {{ isDarkMode ? '☀️' : '🌙' }}
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <div class="tasks-section">
+                <div class="section-header">
+                    <h2>Your Tasks</h2>
+                    <span class="task-count">{{ filteredTasks.length }} {{ filteredTasks.length === 1 ? 'task' : 'tasks' }}</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2025 Smart To-Do Manager. Built with Angular & ❤️</p>
+    </footer>
+</div>
