@@ -24,19 +24,16 @@ export class TaskFormComponent {
     showDetails = signal(false);
     isSubmitting = signal(false);
 
-    constructor() {
-        // Angular 18 effect to handle editing task changes
-        effect(() => {
-            if (this.editingTask) {
-                this.title.set(this.editingTask.title);
-                this.description.set(this.editingTask.description || '');
-                this.priority.set(this.editingTask.priority);
-                this.tags.set([...this.editingTask.tags]);
-                this.showDetails.set(true);
-            } else {
-                this.resetForm();
-            }
-        }, { allowSignalWrites: true });
+    ngOnChanges(): void {
+        if (this.editingTask) {
+            this.title.set(this.editingTask.title);
+            this.description.set(this.editingTask.description || '');
+            this.priority.set(this.editingTask.priority);
+            this.tags.set([...this.editingTask.tags]);
+            this.showDetails.set(true);
+        } else {
+            this.resetForm();
+        }
     }
 
     async onSubmit(): Promise<void> {
